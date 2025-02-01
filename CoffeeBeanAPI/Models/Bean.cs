@@ -7,16 +7,18 @@ namespace CoffeeBeanAPI.Models
         [Key]
         public Guid Id { get; set; }
 
-        public int IndexNumber { get; set; }
+        public string _id { get; set; }
 
-        public bool IsBOTD { get; set; }
+        public int index { get; set; }
+
+        public bool isBOTD { get; set; }
 
         [Required]
-        public decimal Cost { get; set; }
+        public string Cost { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string Image { get; set; }
 
-        public string Colour { get; set; }
+        public string colour { get; set; }
 
         [Required]
         public string Name { get; set; }

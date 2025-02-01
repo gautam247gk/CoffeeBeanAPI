@@ -1,3 +1,4 @@
+using CoffeeBeanAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    //Run DB Seeder
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        await DatabaseSeeder.SeedAsync(services);
+    }
 }
 
 app.UseHttpsRedirection();

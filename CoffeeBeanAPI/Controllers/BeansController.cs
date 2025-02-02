@@ -100,6 +100,59 @@ namespace CoffeeBeanAPI.Controllers
             return NoContent();
         }
 
+        // SEARCH BEANS: Filter by name, country, or color
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Bean>>> SearchBeans(
+            [FromQuery] string? name,
+            [FromQuery] string? country,
+            [FromQuery] string? colour,
+            [FromQuery] bool? isBOTD,
+            [FromQuery] decimal? minCost,
+            [FromQuery] decimal? maxCost)
+        {
+            var query = _context.Beans.AsQueryable();
+
+            // Apply non-cost filters first
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.Where(b => b.Name.Contains(name));
+            }
+
+            if (!string.IsNullOrWhiteSpace(country))
+            {
+                query = query.Where(b => b.Country.Contains(country));
+            }
+
+            if (!string.IsNullOrWhiteSpace(colour))
+            {
+                query = query.Where(b => b.colour.Contains(colour));
+            }
+
+            if (isBOTD.HasValue)
+            {
+                query = query.Where(b => b.isBOTD == isBOTD.Value);
+            }
+
+            // Get results and then filter by cost
+            var results = await query.ToListAsync();
+
+            if (minCost.HasValue || maxCost.HasValue)
+            {
+                results = results.Where(b => {
+                    var cost = decimal.Parse(b.Cost.Replace("£", ""));
+                    return (!minCost.HasValue || cost >= minCost.Value) &&
+                           (!maxCost.HasValue || cost <= maxCost.Value);
+                }).ToList();
+            }
+
+            if (!results.Any())
+            {
+                return NotFound("No matching beans found.");
+            }
+
+            return Ok(results);
+        }
+
         private bool BeanExists(Guid id)
         {
             return _context.Beans.Any(e => e.Id == id);

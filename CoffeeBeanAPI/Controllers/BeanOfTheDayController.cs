@@ -34,6 +34,7 @@ namespace CoffeeBeanAPI.Controllers
             if (previousBeanOfTheDay != null)
             {
                 previousBeanOfTheDay.isBOTD = false;
+                await _context.SaveChangesAsync();
             }
 
             var allBeans = await _context.Beans.ToListAsync();
